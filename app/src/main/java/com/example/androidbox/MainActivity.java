@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.example.androidbox.Impl.ExoPlayerVolumeImpl;
 import com.example.androidbox.adapter.PlayerAdapter;
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
     float currentVolum;
     List<SimpleExoPlayer> exoPlayer=new ArrayList<>();
     ExoPlayerVolumeImpl exoPlayerVolume=new ExoPlayerVolumeImpl();
+    List<PlayerView> playerViews=new ArrayList<>();
+    boolean fs=false;
 
     @SuppressLint("WrongConstant")
     @Override
@@ -67,13 +72,15 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
         Uri uri=Uri.parse(url);
         DataSource.Factory daFactory=new DefaultHttpDataSourceFactory(Util.getUserAgent(this,"exoplayer"));
         MediaSource mediaSource=new ProgressiveMediaSource.Factory(daFactory).createMediaSource(uri);
+        float currentVolum=exoPlayer.getVolume();
+        this.currentVolum=currentVolum;
         exoPlayer.setVolume(0f);
         exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);
 
-        float currentVolum=exoPlayer.getVolume();
-        this.currentVolum=currentVolum;
+
         this.exoPlayer.add(pos,exoPlayer);
+        this.playerViews.add(pos,playerView);
     }
 
     @Override
@@ -89,5 +96,38 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
             exoPlayerVolume.onOffVolume(this.exoPlayer.get(1),currentVolum);
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (fs)
+        {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            if(getSupportActionBar() != null){
+                getSupportActionBar().show();
+            }
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) playerViews.get(0).getLayoutParams();
+            params.width=params.MATCH_PARENT;
+            params.height=params.MATCH_PARENT;
+            playerViews.get(0).setLayoutParams(params);
+            fs=false;
+        }
+        else
+        {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
+                    |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            if(getSupportActionBar() != null){
+                getSupportActionBar().hide();
+            }
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) playerViews.get(0).getLayoutParams();
+            params.width=params.MATCH_PARENT;
+            params.height=params.MATCH_PARENT;
+            playerViews.get(0).setLayoutParams(params);
+            fs=true;
+        }
+        return super.onKeyLongPress(keyCode, event);
     }
 }
