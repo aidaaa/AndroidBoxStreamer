@@ -1,23 +1,24 @@
 package com.example.androidbox;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.example.androidbox.Impl.ExoPlayerVolumeImpl;
+import com.example.androidbox.Impl.full.FullScreenActivity;
+import com.example.androidbox.Impl.vol.ExoPlayerVolumeImpl;
 import com.example.androidbox.adapter.PlayerAdapter;
 import com.example.androidbox.datamodel.PlayerDataModel;
-import com.example.androidbox.myInterface.ExoPlayerVolume;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
         }
 
         PlayerAdapter adapter=new PlayerAdapter(this,playerDataModels,this);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3, LinearLayoutManager.VERTICAL,false));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
     }
 
@@ -83,51 +84,110 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
         this.playerViews.add(pos,playerView);
     }
 
+    //volume
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        int i=event.getKeyCode();
+        System.out.println(String.valueOf(i));
 
         if (keyCode==19)
         {
-            exoPlayerVolume.onOffVolume(this.exoPlayer.get(0),currentVolum);
+            for (int j = 0; j < 4; j++)
+            {
+                if (j!=0)
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+            }
+            float vol=this.exoPlayer.get(0).getVolume();
+            if (vol==0f) {
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), currentVolum);
+            }else{
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), 0f);
+            }
         }
         else if (keyCode==20)
         {
-            exoPlayerVolume.onOffVolume(this.exoPlayer.get(0),0f);
-            exoPlayerVolume.onOffVolume(this.exoPlayer.get(1),currentVolum);
+            for (int j = 0; j < 4; j++)
+            {
+                if (j!=1)
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+            }
+            float vol=this.exoPlayer.get(1).getVolume();
+            if (vol==0f) {
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), currentVolum);
+            }else{
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), 0f);
+            }
+        }
+        //left
+        else if (keyCode==21)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (j!=2)
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+            }
+            float vol=this.exoPlayer.get(2).getVolume();
+            if (vol==0f) {
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), currentVolum);
+            }else{
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), 0f);
+            }
+        }
+        //right
+        else if (keyCode==22)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (j!=3)
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+            }
+            float vol=this.exoPlayer.get(3).getVolume();
+            if (vol==0f) {
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), currentVolum);
+            }else{
+                exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), 0f);
+            }
+        }
+        //ok
+        else if (keyCode==23)
+        {
+            Intent intent=new Intent(MainActivity.this,FullScreenActivity.class);
+            startActivity(intent);
         }
         return super.onKeyUp(keyCode, event);
     }
 
     @Override
+    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+        int i=keyCode;
+        int r=repeatCount;
+        return super.onKeyMultiple(keyCode, repeatCount, event);
+    }
+
+    @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        if (fs)
-        {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-            if(getSupportActionBar() != null){
-                getSupportActionBar().show();
-            }
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) playerViews.get(0).getLayoutParams();
-            params.width=params.MATCH_PARENT;
-            params.height=params.MATCH_PARENT;
-            playerViews.get(0).setLayoutParams(params);
-            fs=false;
-        }
-        else
-        {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
-                    |View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-            if(getSupportActionBar() != null){
-                getSupportActionBar().hide();
-            }
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) playerViews.get(0).getLayoutParams();
-            params.width=params.MATCH_PARENT;
-            params.height=params.MATCH_PARENT;
-            playerViews.get(0).setLayoutParams(params);
-            fs=true;
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            Log.d("Test", "Long press!");
+            return true;
         }
         return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        for (int i = 0; i < 4; i++) {
+            exoPlayer.get(i).stop();
+            exoPlayer.get(i).release();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        for (int i = 0; i < 4; i++) {
+            exoPlayer.get(i).stop();
+            exoPlayer.get(i).release();
+        }
+        super.onPause();
     }
 }
