@@ -89,79 +89,101 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         int i=event.getKeyCode();
         System.out.println(String.valueOf(i));
+        // if ((event.getFlags() & KeyEvent.FLAG_CANCELED_LONG_PRESS)==0)
+        if (!fs) {
 
-        if (keyCode==19)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                if (j!=0)
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+            //up
+            if (keyCode == 19) {
+                for (int j = 0; j < 4; j++) {
+                    if (j != 0)
+                        exoPlayerVolume.onOffVolume(this.exoPlayer.get(j), 0f);
+                }
+                float vol = this.exoPlayer.get(0).getVolume();
+                if (vol == 0f) {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), currentVolum);
+                } else {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), 0f);
+                }
             }
-            float vol=this.exoPlayer.get(0).getVolume();
-            if (vol==0f) {
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), currentVolum);
-            }else{
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(0), 0f);
+            //down
+            else if (keyCode == 20) {
+                for (int j = 0; j < 4; j++) {
+                    if (j != 1)
+                        exoPlayerVolume.onOffVolume(this.exoPlayer.get(j), 0f);
+                }
+                float vol = this.exoPlayer.get(1).getVolume();
+                if (vol == 0f) {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), currentVolum);
+                } else {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), 0f);
+                }
+            }
+            //left
+            else if (keyCode == 21) {
+                for (int j = 0; j < 4; j++) {
+                    if (j != 2)
+                        exoPlayerVolume.onOffVolume(this.exoPlayer.get(j), 0f);
+                }
+                float vol = this.exoPlayer.get(2).getVolume();
+                if (vol == 0f) {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), currentVolum);
+                } else {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), 0f);
+                }
+            }
+            //right
+            else if (keyCode == 22) {
+                for (int j = 0; j < 4; j++) {
+                    if (j != 3)
+                        exoPlayerVolume.onOffVolume(this.exoPlayer.get(j), 0f);
+                }
+                float vol = this.exoPlayer.get(3).getVolume();
+                if (vol == 0f) {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), currentVolum);
+                } else {
+                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), 0f);
+                }
+            }
+            //ok
+            else if (keyCode == 23) {
+                fs=true;
             }
         }
-        else if (keyCode==20)
+
+        else if (fs)
         {
-            for (int j = 0; j < 4; j++)
+            Intent intent = new Intent(MainActivity.this, FullScreenActivity.class);
+            if (keyCode == 19)
             {
-                if (j!=1)
-                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+                intent.putExtra("url","http://192.168.10.74:3001/1");
             }
-            float vol=this.exoPlayer.get(1).getVolume();
-            if (vol==0f) {
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), currentVolum);
-            }else{
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(1), 0f);
-            }
-        }
-        //left
-        else if (keyCode==21)
-        {
-            for (int j = 0; j < 4; j++)
+            else if (keyCode==20)
             {
-                if (j!=2)
-                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+                intent.putExtra("url","http://192.168.10.74:3001/2");
             }
-            float vol=this.exoPlayer.get(2).getVolume();
-            if (vol==0f) {
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), currentVolum);
-            }else{
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(2), 0f);
-            }
-        }
-        //right
-        else if (keyCode==22)
-        {
-            for (int j = 0; j < 4; j++)
+            else if (keyCode==21)
             {
-                if (j!=3)
-                    exoPlayerVolume.onOffVolume(this.exoPlayer.get(j),0f);
+                intent.putExtra("url","http://192.168.10.74:3001/3");
             }
-            float vol=this.exoPlayer.get(3).getVolume();
-            if (vol==0f) {
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), currentVolum);
-            }else{
-                exoPlayerVolume.onOffVolume(this.exoPlayer.get(3), 0f);
+            else if (keyCode==22)
+            {
+                intent.putExtra("url","http://192.168.10.74:3001/4");
             }
-        }
-        //ok
-        else if (keyCode==23)
-        {
-            Intent intent=new Intent(MainActivity.this,FullScreenActivity.class);
             startActivity(intent);
+            fs=false;
         }
+
         return super.onKeyUp(keyCode, event);
     }
 
+/*
     @Override
-    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
-        int i=keyCode;
-        int r=repeatCount;
-        return super.onKeyMultiple(keyCode, repeatCount, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==19) {
+            event.startTracking();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -172,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements PlayerAdapter.Pla
         }
         return super.onKeyLongPress(keyCode, event);
     }
+*/
 
     @Override
     protected void onDestroy() {
