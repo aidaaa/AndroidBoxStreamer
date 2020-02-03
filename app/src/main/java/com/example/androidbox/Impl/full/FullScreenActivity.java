@@ -14,6 +14,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -33,20 +34,31 @@ public class FullScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_full_screen);
         player_full_screen=findViewById(R.id.player_full_screen);
         String url=getIntent().getStringExtra("url");
-        fullScreen(url);
+        String ch=getIntent().getStringExtra("ch");
+        fullScreen(url,ch);
     }
 
-    public void fullScreen(String url) {
+    public void fullScreen(String url,String ch) {
         trackSelector=new DefaultTrackSelector();
         simpleExoPlayer= ExoPlayerFactory.newSimpleInstance(FullScreenActivity.this,trackSelector);
         player_full_screen.setPlayer(simpleExoPlayer);
 
         Uri uri= Uri.parse(url);
         DataSource.Factory dFactory=new DefaultHttpDataSourceFactory(Util.getUserAgent(this,"exoplayer"));
-        MediaSource mediaSource=new ProgressiveMediaSource.Factory(dFactory).createMediaSource(uri);
+        if (ch.contains("0"))
+        {
+            HlsMediaSource mediaSource=new HlsMediaSource.Factory(dFactory).createMediaSource(uri);
 
-        simpleExoPlayer.prepare(mediaSource);
-        simpleExoPlayer.setPlayWhenReady(true);
+            simpleExoPlayer.prepare(mediaSource);
+            simpleExoPlayer.setPlayWhenReady(true);
+        }
+        else
+        {
+            MediaSource mediaSource=new ProgressiveMediaSource.Factory(dFactory).createMediaSource(uri);
+
+            simpleExoPlayer.prepare(mediaSource);
+            simpleExoPlayer.setPlayWhenReady(true);
+        }
     }
 
     @Override
